@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: gateway
+  cloud:
+    loadbalancer:
+      ribbon:
+        enable: false
+    gateway:
+      forwarded:
+        enabled: false
+      x-forwarded:
+        protoEnabled: false
+        portEnabled: false
+      routes:
+        - id: endpoint
+          uri: lb://endpoint
+          predicates:
+            - Path=/greeting/**
+
+server:
+  port: 8888
