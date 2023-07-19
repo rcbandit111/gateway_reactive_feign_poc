@@ -20,17 +20,19 @@ public class ClientService {
     }
 
     public Mono<BasicTokenResponseDto> getJwt(String authHeader) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add(HttpHeaders.AUTHORIZATION, authHeader);
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.setContentType(MediaType.APPLICATION_JSON);
+//        headers.add(HttpHeaders.AUTHORIZATION, authHeader);
 
-        MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
-        requestBody.add("key", "value");
+//        MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
+//        requestBody.add("key", "value");
+//
+//        return clientFeign.getJwt(authHeader).map(customObject -> {
+//            BasicTokenResponseDto customObj = new BasicTokenResponseDto();
+//            customObj.setAccess_token(customObject.getAccess_token());
+//            return customObj;
+//        });
 
-        return clientFeign.getJwt(authHeader).map(customObject -> {
-            BasicTokenResponseDto customObj = new BasicTokenResponseDto();
-            customObj.setAccess_token(customObject.getAccess_token());
-            return customObj;
-        });
+        return clientFeign.getJwt(authHeader);
     }
 }
