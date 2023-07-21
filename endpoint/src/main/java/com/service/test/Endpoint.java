@@ -32,7 +32,6 @@ public class Endpoint {
         BasicTokenRequestDto response = new BasicTokenRequestDto();
         response.setAccess_token("1234525235234234234234234234234234234234234=="+token);
 
-
         System.out.println("token has been generated");
         return ResponseEntity.ok(response);
 //        return new ResponseEntity<>(response, HttpStatus.OK);
