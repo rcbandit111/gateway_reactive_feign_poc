@@ -36,19 +36,17 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
 //    System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! " + token);
 
 
+    AtomicReference<BasicTokenResponseDto> plainJavaObject = new AtomicReference<>();
+    Mono<BasicTokenResponseDto> tokenMono = clientService.getJwt();
+    tokenMono.subscribe(transformedToken -> {
+      plainJavaObject.set(transformedToken);
+    });
+    BasicTokenResponseDto token = plainJavaObject.get();
 
-    return clientService.getJwt("test")
-            .map(e-> e==null?"null":e.toString())
-            .doOnNext(e-> log.info(" The token is {}",e))
-//            .map(e-> request.mutate()
-//            .headers(httpHeaders -> httpHeaders.add("token",e)).build())
-            .flatMap(e-> {
-              ServerHttpResponse response = exchange.getResponse();
-              response.getHeaders().set("token",e);
-              return chain.filter(exchange.mutate()
-                      .response(response).build());
-            })
-            ;
+    System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! " + token);
+
+
+    return null;
   }
 
 
