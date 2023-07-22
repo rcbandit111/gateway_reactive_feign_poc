@@ -88,7 +88,7 @@ public class ClientService {
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
-        requestBody.add("test", "test");
+        requestBody.add("api_key", "123456789");
 
         Mono<BasicTokenResponseDto> responseMono = webClient.method(HttpMethod.POST)
                 .uri("http://endpoint/greeting")

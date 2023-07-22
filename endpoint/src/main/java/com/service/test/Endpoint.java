@@ -30,7 +30,7 @@ public class Endpoint {
     public ResponseEntity<BasicTokenRequestDto> apiKeytest(String token)
     {
         BasicTokenRequestDto response = new BasicTokenRequestDto();
-        response.setAccess_token("1234525235234234234234234234234234234234234=="+token);
+        response.setApi_key("1234525235234234234234234234234234234234234=="+token);
 
 
         System.out.println("token has been generated");
@@ -39,13 +39,13 @@ public class Endpoint {
     }
 
     @PostMapping(value = "/greeting", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<BasicTokenRequestDto> apiKey(@RequestBody BasicTokenResponseDto token)
+    public ResponseEntity<BasicTokenRequestDto> apiKey(@RequestBody String api_key)
     {
         BasicTokenRequestDto response = new BasicTokenRequestDto();
-        response.setAccess_token("1234525235234234234234234234234234234234234=="+token);
+        response.setApi_key("1234525235234234234234234234234234234234234=="+api_key);
 
         System.out.println("token has been generated");
-        System.out.println("1234525235234234234234234234234234234234234=="+token);
+        System.out.println("1234525235234234234234234234234234234234234=="+api_key);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
