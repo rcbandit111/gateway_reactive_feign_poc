@@ -45,8 +45,10 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
 
     System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! " + token);
 
+//TODO this is a web exchange filter  ,  null is  forbidden
+//    return null;
 
-    return null;
+    return  chain.filter(exchange.mutate().build());
   }
 
 
