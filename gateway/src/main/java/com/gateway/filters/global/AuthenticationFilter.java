@@ -52,10 +52,12 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
     ====================================================================== */
     return clientService.getJwt()
             .flatMap(transformedToken -> {
-              // Process the transformedToken here if needed
-              System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! " + transformedToken);
-              // Continue the chain by calling the next filter
-              return chain.filter(exchange);
+                AtomicReference<BasicTokenResponseDto> plainJavaObject = new AtomicReference<>();
+                plainJavaObject.set(transformedToken);
+                BasicTokenResponseDto token = plainJavaObject.get();
+                System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! " + token);
+                // Continue the chain by calling the next filter
+                return chain.filter(exchange);
             })
             .onErrorResume(throwable -> {
               // Handle errors if necessary
