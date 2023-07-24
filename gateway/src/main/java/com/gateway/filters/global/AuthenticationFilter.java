@@ -35,7 +35,7 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
 //
 //    System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! " + token);
 
-
+    /* modified start - SuperDev {
     AtomicReference<BasicTokenResponseDto> plainJavaObject = new AtomicReference<>();
     Mono<BasicTokenResponseDto> tokenMono = clientService.getJwt();
     tokenMono.subscribe(transformedToken -> {
@@ -49,6 +49,21 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
 //    return null;
 
     return  chain.filter(exchange.mutate().build());
+    ====================================================================== */
+    return clientService.getJwt()
+            .flatMap(transformedToken -> {
+              // Process the transformedToken here if needed
+              System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! " + transformedToken);
+              // Continue the chain by calling the next filter
+              return chain.filter(exchange);
+            })
+            .onErrorResume(throwable -> {
+              // Handle errors if necessary
+              log.error("Error occurred during authentication: {}", throwable.getMessage());
+              // Continue the chain by calling the next filter
+              return chain.filter(exchange);
+            });
+      // modify end - SuperDev @}
   }
 
 
