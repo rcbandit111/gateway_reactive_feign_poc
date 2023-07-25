@@ -6,12 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
-import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpResponse;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
-
-import java.util.concurrent.atomic.AtomicReference;
 
 @Slf4j
 public class AuthenticationFilter implements GlobalFilter, Ordered {
@@ -22,33 +22,16 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
   @Override
   public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
 
-    ServerHttpRequest request = exchange.getRequest();
-
-
-//    AtomicReference<BasicTokenResponseDto> plainJavaObject = new AtomicReference<>();
-//    Mono<BasicTokenResponseDto> tokenMono = clientService.getJwt("test");
-//    tokenMono.subscribe(transformedToken -> {
-//      plainJavaObject.set(transformedToken);
-//    });
-//    BasicTokenResponseDto token = plainJavaObject.get();
-//
-//
-//    System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! " + token);
-
-
-    AtomicReference<BasicTokenResponseDto> plainJavaObject = new AtomicReference<>();
-    Mono<BasicTokenResponseDto> tokenMono = clientService.getJwt();
-    tokenMono.subscribe(transformedToken -> {
-      plainJavaObject.set(transformedToken);
+    // handle non-blocking
+    return clientService.getJwt().flatMap(token -> {
+      if (ObjectUtils.isEmpty(token) || !StringUtils.hasText(token.getAccess_token())) {
+        ServerHttpResponse response = exchange.getResponse();
+        response.setStatusCode(HttpStatus.UNAUTHORIZED);
+        return response.setComplete();
+      } else {
+        return chain.filter(exchange);
+      }
     });
-    BasicTokenResponseDto token = plainJavaObject.get();
-
-    System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! " + token);
-
-//TODO this is a web exchange filter  ,  null is  forbidden
-//    return null;
-
-    return  chain.filter(exchange.mutate().build());
   }
 
 
