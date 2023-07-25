@@ -1,5 +1,6 @@
 package com.gateway.feign;
 
+import com.gateway.filters.global.BasicTokenRequestDto;
 import com.gateway.filters.global.BasicTokenResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -89,20 +90,23 @@ public class ClientService {
 
         MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
         requestBody.add("api_key", "123456789");
+        ApiKey apiKey = new ApiKey();
+        apiKey.setApi_key("172613672");
 
         Mono<BasicTokenResponseDto> responseMono = webClient.method(HttpMethod.POST)
                 .uri("http://endpoint/greeting")
                 .headers(httpHeaders -> httpHeaders.addAll(headers))
-                .body(BodyInserters.fromValue(requestBody))
+//                .body(BodyInserters.fromValue(requestBody))
+                .body(Mono.just(apiKey), ApiKey.class)
                 .retrieve()
                 .bodyToMono(BasicTokenResponseDto.class);
 
-        Mono<BasicTokenResponseDto> response = responseMono.map(obj -> {
-            BasicTokenResponseDto tokenResponse = new BasicTokenResponseDto();
-            tokenResponse.setAccess_token(obj.getAccess_token());
-            return tokenResponse;
-        });
+//        Mono<BasicTokenResponseDto> response = responseMono.map(obj -> {
+//            BasicTokenResponseDto tokenResponse = new BasicTokenResponseDto();
+//            tokenResponse.setAccess_token(obj.getAccess_token());
+//            return tokenResponse;
+//        });
 
-        return response;
+        return responseMono;
     }
 }
