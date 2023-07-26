@@ -8,6 +8,7 @@ import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
 import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.web.server.ServerWebExchange;
@@ -16,6 +17,7 @@ import reactor.core.publisher.Mono;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Slf4j
@@ -33,20 +35,23 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
     ServerHttpRequest request = exchange.getRequest();
     ServerHttpResponse response = exchange.getResponse();
       List<String> tokens = request.getHeaders().get("token");
-        if (tokens!=null && tokens.size()!=0){
-            return clientService.getJwt(tokens.get(0))
-                    .flatMap(transformedToken -> {
-                        AtomicReference<BasicTokenResponseDto> plainJavaObject = new AtomicReference<>();
-                        plainJavaObject.set(transformedToken);
-                        BasicTokenResponseDto token = plainJavaObject.get();
-                        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! " + token);
-                        response.getHeaders().add("token",token.getAccess_token());
-                        // Continue the chain by calling the next filter
-                        return chain.filter(exchange.mutate().response(response).build());
+        if (tokens!=null && tokens.size()!=0) {
+            String apiKey = tokens.get(0);
+            CompletableFuture<ResponseEntity<BasicTokenResponseDto>> completableFuture = CompletableFuture.supplyAsync
+                    (()-> {
+                        return clientService.getJwtWithRestTemplate(apiKey);
                     });
-        }
-          return chain.filter(exchange);
 
+            ResponseEntity<BasicTokenResponseDto> resp = null;
+            try {
+                resp = completableFuture.get();
+            } catch (Exception ex) {
+                log.error("error get token", ex);
+            }
+            //now you can use the token
+            System.out.println("access token = " + resp.getBody().getAccess_token());
+        }
+        return chain.filter(exchange);
 
   }
 

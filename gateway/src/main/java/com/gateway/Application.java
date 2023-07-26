@@ -5,11 +5,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.cloud.client.loadbalancer.reactive.ReactorLoadBalancerExchangeFilterFunction;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.config.EnableWebFlux;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactivefeign.spring.config.EnableReactiveFeignClients;
@@ -38,5 +40,8 @@ public class Application {
   public WebClient loadBalancedWebClientBuilder() {
     return WebClient.builder().filter(lbFunction).build();
   }
-
+  @Bean
+  public RestTemplate restTemplate() {
+    return new RestTemplate();
+  }
 }

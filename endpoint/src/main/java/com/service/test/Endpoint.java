@@ -52,7 +52,8 @@ public class Endpoint {
             return ResponseEntity.ok(response);
 
         }
-        return ResponseEntity.badRequest().build();
+        response.setAccess_token("error api key");
+        return ResponseEntity.ok(response);
     }
 
 
