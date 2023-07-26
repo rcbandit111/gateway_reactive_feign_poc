@@ -15,7 +15,9 @@ spring:
         - id: endpoint
           uri: lb://endpoint
           predicates:
-            - Path=/greeting/**
+#            - Path=/greeting/**
+#            - Path=/token/**
+            - Path=/**
 eureka:
   client:
     serviceUrl:

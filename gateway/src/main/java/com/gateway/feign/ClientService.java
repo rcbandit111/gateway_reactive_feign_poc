@@ -32,55 +32,28 @@ public class ClientService {
     @Autowired
     public WebClient webClient;
 
-//    public Mono<BasicTokenResponseDto> getJwt(String authHeader) {
-//
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setContentType(MediaType.APPLICATION_JSON);
-//        headers.add(HttpHeaders.AUTHORIZATION, authHeader);
-//
-//        MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
-//        requestBody.add("test", "test");
-//
-//        Mono<BasicTokenResponseDto> responseMono = webClient.method(HttpMethod.POST)
-//                .uri("some usrl")
-//                .headers(httpHeaders -> httpHeaders.addAll(headers))
-//                .body(BodyInserters.fromValue(requestBody))
-//                .retrieve()
-//                .bodyToMono(BasicTokenResponseDto.class);
-//
-//        Mono<BasicTokenResponseDto> customObjMono = responseMono.map(customObject -> {
-//            BasicTokenResponseDto customObj = new BasicTokenResponseDto();
-//            customObj.setAccess_token(customObject.getAccess_token());
-//            return customObj;
-//        });
-//
-//        return customObjMono;
-//    }
+    public Mono<BasicTokenResponseDto> getJwt(String key)
+            throws RestClientException {
 
-//    public Mono<BasicTokenResponseDto> getJwt(String authHeader) {
-//
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setContentType(MediaType.APPLICATION_JSON);
-//        headers.add(HttpHeaders.AUTHORIZATION, authHeader);
-//
-//        MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
-//        requestBody.add("test", "test");
-//
-//        Mono<BasicTokenResponseDto> responseMono = webClient.method(HttpMethod.POST)
-//                .uri("some usrl")
-//                .headers(httpHeaders -> httpHeaders.addAll(headers))
-//                .body(BodyInserters.fromValue(requestBody))
-//                .retrieve()
-//                .bodyToMono(BasicTokenResponseDto.class);
-//
-//        Mono<BasicTokenResponseDto> customObjMono = responseMono.map(customObject -> {
-//            BasicTokenResponseDto customObj = new BasicTokenResponseDto();
-//            customObj.setAccess_token(customObject.getAccess_token());
-//            return customObj;
-//        });
-//
-//        return customObjMono;
-//    }
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        ApiKey apiKey = new ApiKey();
+        apiKey.setApi_key(key);
+
+        return webClient.method(HttpMethod.POST)
+                .uri("http://endpoint/greeting")
+                .headers(httpHeaders -> httpHeaders.addAll(headers))
+                .body(Mono.just(apiKey), ApiKey.class)
+                .retrieve()
+                .onStatus(httpStatus -> {
+                    return httpStatus.isError();
+                },clientResponse -> {
+                  return clientResponse.createException();
+                })
+                .bodyToMono(BasicTokenResponseDto.class)
+                ;
+    }
 
     public Mono<BasicTokenResponseDto> getJwt()
             throws RestClientException {
@@ -88,25 +61,14 @@ public class ClientService {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
-        requestBody.add("api_key", "123456789");
         ApiKey apiKey = new ApiKey();
         apiKey.setApi_key("172613672");
 
-        Mono<BasicTokenResponseDto> responseMono = webClient.method(HttpMethod.POST)
+        return webClient.method(HttpMethod.POST)
                 .uri("http://endpoint/greeting")
                 .headers(httpHeaders -> httpHeaders.addAll(headers))
-//                .body(BodyInserters.fromValue(requestBody))
                 .body(Mono.just(apiKey), ApiKey.class)
                 .retrieve()
                 .bodyToMono(BasicTokenResponseDto.class);
-
-//        Mono<BasicTokenResponseDto> response = responseMono.map(obj -> {
-//            BasicTokenResponseDto tokenResponse = new BasicTokenResponseDto();
-//            tokenResponse.setAccess_token(obj.getAccess_token());
-//            return tokenResponse;
-//        });
-
-        return responseMono;
     }
 }
